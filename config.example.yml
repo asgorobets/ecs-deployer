@@ -1,0 +1,9 @@
+project-name: app1
+cluster: my-cluster
+region: us-west-2
+compose-file: docker-compose.yml
+elb-name: app1-elb
+blue:
+  target-group-arn: <tg-arn>
+green:
+  target-group-arn: <tg-arn>

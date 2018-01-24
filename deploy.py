@@ -57,9 +57,6 @@ def get_target_groups(elbname):
             betatargetgroup = x['Actions'][0]['TargetGroupArn']
             betarulearn = x['RuleArn']
 
-    print("Live=" + livetargetgroup)
-    print("Beta=" + betatargetgroup)
-
     return {
         'live': {
             'target-group-arn': livetargetgroup,
@@ -93,8 +90,6 @@ def swaptargetgroups(elbname):
         ]
     )
 
-    print(modifyOnBeta)
-
     modifyOnLive = elbclient.modify_rule(
         RuleArn=state['live']['elb-listener-rule-arn'],
         Actions=[
@@ -105,7 +100,6 @@ def swaptargetgroups(elbname):
         ]
     )
 
-    print(modifyOnLive)
     modify_tags(state['live']['target-group-arn'],"IsProduction","False")
     modify_tags(state['beta']['target-group-arn'], "IsProduction", "True")
 
@@ -162,8 +156,8 @@ def promote():
     elbname = config['elb-name']
 
     try:
-        click.echo("ELBNAME="+elbname)
         swaptargetgroups(elbname)
+        click.echo('Swap successful')
 
     except Exception as e:
         click.echo('Swap failed due to exception.')

@@ -458,6 +458,8 @@ def status(ctx, versioned_container_name):
     for color in colors:
         service_name = get_service_name(ctx.obj['project-name'], ctx.obj['env'], ctx.obj['component'], color)
         service = get_service(ctx.obj['cluster'], service_name)
+        if not service:
+            continue
 
         task_definition = ecsclient.describe_task_definition(
             taskDefinition=service['taskDefinition']

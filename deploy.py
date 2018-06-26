@@ -348,8 +348,9 @@ def promote(ctx):
 @click.option('--alb-container-name', default='web')
 @click.option('--alb-container-port', default='80')
 @click.option('--health-check-grace-period', default='10')
+@click.option('--timeout', default='10')
 @click.pass_context
-def deploy(ctx, version, initial_scale, deployment_max_percent, deployment_min_healthy_percent, attach_alb, alb_container_name, alb_container_port, health_check_grace_period):
+def deploy(ctx, version, initial_scale, deployment_max_percent, deployment_min_healthy_percent, attach_alb, alb_container_name, alb_container_port, health_check_grace_period, timeout):
     target_service_name = get_service_name(ctx.obj['project-name'], ctx.obj['env'], ctx.obj['component'], ctx.obj['target-color'])
     if not get_service(ctx.obj['cluster'], target_service_name):
         load_balancer_options = ''
@@ -358,11 +359,11 @@ def deploy(ctx, version, initial_scale, deployment_max_percent, deployment_min_h
             load_balancer_options = f"--target-group-arn {tg_arn} --container-name {alb_container_name} --container-port {alb_container_port} --health-check-grace-period {health_check_grace_period} --role ecs-service"
 
         # Deploy initial service and attach it to the load balancer target group.
-        run_service_command(ctx, f"service up --deployment-max-percent={deployment_max_percent} --deployment-min-healthy-percent={deployment_min_healthy_percent} {load_balancer_options}", {"VERSION": version})
+        run_service_command(ctx, f"service up --deployment-max-percent={deployment_max_percent} --deployment-min-healthy-percent={deployment_min_healthy_percent} --timeout={timeout} {load_balancer_options}", {"VERSION": version})
         # Scale to the desired service size.
-        run_service_command(ctx, f"service scale {initial_scale}")
+        run_service_command(ctx, f"service scale --timeout={timeout} {initial_scale}")
     else:
-        run_service_command(ctx, f"service up --deployment-max-percent={deployment_max_percent} --deployment-min-healthy-percent={deployment_min_healthy_percent}", {"VERSION": version})
+        run_service_command(ctx, f"service up --deployment-max-percent={deployment_max_percent} --deployment-min-healthy-percent={deployment_min_healthy_percent} --timeout={timeout}", {"VERSION": version})
 
     # TODO: Implement target group health checking
 

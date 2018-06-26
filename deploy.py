@@ -61,14 +61,14 @@ def get_target_groups(elbname):
     livetgresponse = elbclient.describe_rules(ListenerArn=livelistenerarn)
 
     for x in livetgresponse['Rules']:
-        if x['Priority'] == '1':
+        if x['Conditions'] and x['Conditions'][0]['Field'] == 'path-pattern' and x['Conditions'][0]['Values'] == ['*']:
             livetargetgroup = x['Actions'][0]['TargetGroupArn']
             liverulearn = x['RuleArn']
 
     betatgresponse = elbclient.describe_rules(ListenerArn=betalistenerarn)
 
     for x in betatgresponse['Rules']:
-        if x['Priority'] == '1':
+        if x['Conditions'] and x['Conditions'][0]['Field'] == 'path-pattern' and x['Conditions'][0]['Values'] == ['*']:
             betatargetgroup = x['Actions'][0]['TargetGroupArn']
             betarulearn = x['RuleArn']
 

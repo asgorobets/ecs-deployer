@@ -242,6 +242,9 @@ def get_status_tasks_records(ctx, service_name):
         serviceName=service_name,
     )
     task_arns = response['taskArns']
+    if not task_arns:
+        return []
+
     tasks_list = ecsclient.describe_tasks(
         cluster=ctx.obj['cluster'],
         tasks=task_arns

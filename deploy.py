@@ -443,13 +443,17 @@ def wait_for_services(ctx, service_name):
 @click.pass_context
 def status(ctx, versioned_container_name):
     ctx.obj['versioned-container-name'] = versioned_container_name
-    response = elbclient.describe_load_balancers(
-        Names=[
-            ctx.obj['elb-name'],
-        ],
-    )
+    elb_dns = ''
+    try:
+        response = elbclient.describe_load_balancers(
+            Names=[
+                ctx.obj['elb-name'],
+            ],
+        )
 
-    elb_dns = response['LoadBalancers'][0]['DNSName']
+        elb_dns = response['LoadBalancers'][0]['DNSName']
+    except:
+        pass
 
     services_records = []
     tasks_records = []
